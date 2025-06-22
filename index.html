@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Team Grid Builder</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="header">
+    <div class="logo">TeamMaker</div>
+    <div class="options-bar">
+      <button id="clearBtn">Clear Board</button>
+      <div class="trash" id="trashCan" title="Drag players or teams here to delete">🗑️</div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="input-section">
+      <input type="text" id="teamName" placeholder="Team name" />
+      <button id="addTeamBtn">Add Team</button>
+    </div>
+
+    <div class="input-section">
+      <input type="text" id="playerName" placeholder="Player name" />
+      <button id="addPlayerBtn">Add Player</button>
+    </div>
+
+    <div class="section-title">Available Players</div>
+    <div class="players grid" id="playerList"></div>
+
+    <div class="section-title">Teams</div>
+    <div class="teams grid" id="teamsContainer"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
