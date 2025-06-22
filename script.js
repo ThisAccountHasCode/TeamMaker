@@ -236,12 +236,26 @@ function addTeam() {
 function addPlayer() {
   const input = document.getElementById("playerName");
   const name = input.value.trim();
-  if (name) {
-    data.players.push({ id: Date.now().toString(), name, leader: false });
-    input.value = "";
-    save();
-    render();
+  if (!name) return; // Ignore empty
+
+  // Normalize for comparison (lowercase)
+  const normalizedNewName = name.toLowerCase();
+
+  // Check for duplicates
+  const duplicate = data.players.some(
+    (p) => p.name.toLowerCase() === normalizedNewName
+  );
+
+  if (duplicate) {
+    alert(`Player "${name}" already exists! Please enter a unique name.`);
+    return; // Do not add duplicate
   }
+
+  // Add player if unique
+  data.players.push({ id: Date.now().toString(), name, leader: false });
+  input.value = "";
+  save();
+  render();
 }
 
 function clearBoard() {
@@ -376,6 +390,52 @@ if (infoIcon) {
     infoBox.classList.toggle("sticky");
   });
 }
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function randomizeTeams(numTeams) {
+  if (numTeams < 1) return;
+
+  // Create new teams
+  data.teams = [];
+  for (let i = 1; i <= numTeams; i++) {
+    data.teams.push({
+      id: Date.now().toString() + "-" + i,
+      name: `Team ${i}`,
+      members: [],
+      color: randomPastelColor(),
+    });
+  }
+
+  // Shuffle players copy
+  const playersCopy = [...data.players];
+  shuffleArray(playersCopy);
+
+  // Distribute players evenly
+  playersCopy.forEach((player, index) => {
+    const teamIndex = index % numTeams;
+    data.teams[teamIndex].members.push(player.id);
+  });
+
+  save();
+  render();
+}
+
+// Hook up button
+document.getElementById("randomizeBtn").addEventListener("click", () => {
+  const numTeamsInput = document.getElementById("numTeamsInput");
+  let numTeams = parseInt(numTeamsInput.value, 10);
+
+  // Clamp to minimum 1, max 10 (or whatever limit you want)
+  if (isNaN(numTeams) || numTeams < 1) numTeams = 1;
+  if (numTeams > 10) numTeams = 10;
+
+  randomizeTeams(numTeams);
+});
 
 addLastEditedFooter();
 
