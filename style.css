@@ -1,3 +1,4 @@
+/* Reset and Global Styles */
 * {
   box-sizing: border-box;
 }
@@ -12,11 +13,12 @@ html, body {
   color: #e0e0e0;
 }
 
+/* Header */
 .header {
   width: 100%;
   background-color: #1e1e1e;
   padding: 16px 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -65,6 +67,7 @@ html, body {
   background-color: #ff1744;
 }
 
+/* Container */
 .container {
   max-width: 900px;
   width: 100%;
@@ -82,22 +85,22 @@ h1 {
   color: #ffffff;
 }
 
-/* Updated input and button styling for matching widths */
+/* Input Section */
 .input-section {
   margin-bottom: 12px;
   display: flex;
   justify-content: center;
-  flex-wrap: nowrap; /* no wrapping */
+  flex-wrap: nowrap;
   gap: 10px;
-  max-width: 420px;  /* optional to constrain width */
+  max-width: 420px;
   margin-left: auto;
   margin-right: auto;
 }
 
 .input-section input {
-  flex: 1;             /* fill available space */
-  min-width: 0;        /* prevent overflow */
-  max-width: 300px;    /* optional max width */
+  flex: 1;
+  min-width: 0;
+  max-width: 300px;
   background-color: #1e1e1e;
   color: #fff;
   border: 1px solid #444;
@@ -110,8 +113,8 @@ h1 {
 }
 
 .input-section button {
-  width: 100px;        /* fixed button width */
-  flex-shrink: 0;      /* no shrinking */
+  width: 100px;
+  flex-shrink: 0;
   background-color: #2979ff;
   color: white;
   cursor: pointer;
@@ -126,6 +129,7 @@ h1 {
   background-color: #5393ff;
 }
 
+/* Grid and Teams */
 .grid {
   display: flex;
   gap: 10px;
@@ -141,7 +145,7 @@ h1 {
   flex: 1 1 220px;
   background-color: #1e1e1e;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   min-height: 120px;
@@ -159,6 +163,7 @@ h1 {
   margin-bottom: 6px;
 }
 
+/* Player Styles */
 .player {
   background: #4dabf7;
   padding: 6px 12px;
@@ -182,6 +187,7 @@ h1 {
   color: gold;
 }
 
+/* Section Title */
 .section-title {
   margin-top: 30px;
   margin-bottom: 10px;
@@ -191,6 +197,7 @@ h1 {
   color: #ffffff;
 }
 
+/* Responsive Styles */
 @media (max-width: 600px) {
   .header {
     flex-direction: column;
@@ -206,7 +213,6 @@ h1 {
     padding: 20px 10px;
   }
 
-  /* Adjust input-section for smaller screens */
   .input-section {
     flex-wrap: wrap;
     max-width: 100%;
@@ -221,12 +227,12 @@ h1 {
   }
 }
 
+/* Team Players Container */
 .team-players {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   margin-top: 6px;
-
   min-height: 50px;
   padding: 6px;
   border: 2px dashed transparent;
@@ -239,6 +245,7 @@ h1 {
   background-color: rgba(41, 121, 255, 0.1);
 }
 
+/* Player List Container */
 #playerList {
   min-height: 50px;
   padding: 6px;
@@ -251,8 +258,9 @@ h1 {
   background-color: rgba(41, 121, 255, 0.1);
 }
 
+/* Footer */
 .footer {
-  position: fixed;  /* change from absolute to fixed */
+  position: fixed;
   bottom: 0.5rem;
   left: 1rem;
   font-size: 0.75rem;
@@ -276,6 +284,7 @@ h1 {
   text-decoration: underline;
 }
 
+/* Info Box and Tooltip */
 .info-box {
   position: fixed;
   bottom: 1rem;
@@ -296,7 +305,7 @@ h1 {
   line-height: 24px;
   font-weight: bold;
   font-size: 16px;
-  cursor: pointer; /* clickable */
+  cursor: pointer;
   box-shadow: none;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -328,18 +337,19 @@ h1 {
   transition: opacity 0.3s ease;
 }
 
-/* Show on hover only if NOT sticky */
+/* Show tooltip on hover if NOT sticky */
 .info-box:not(.sticky):hover .info-tooltip {
   display: block;
   opacity: 1;
 }
 
-/* Show if sticky (clicked) */
+/* Show tooltip if sticky (clicked) */
 .info-box.sticky .info-tooltip {
   display: block;
   opacity: 1;
 }
 
+/* Randomize Controls */
 #randomizeControls {
   display: flex;
   justify-content: center;
@@ -352,7 +362,6 @@ h1 {
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
   border: 1px solid #444;
-  /* Add this so it shrinks properly on smaller widths */
   flex-wrap: wrap;
 }
 
@@ -398,14 +407,15 @@ h1 {
   background-color: #1e88e5;
 }
 
-/* Responsive adjustment */
+/* Responsive for Randomize Controls */
 @media (max-width: 400px) {
   #randomizeControls {
     max-width: 100%;
     justify-content: space-around;
   }
 
-  #randomizeBtn, #numTeamsInput {
+  #randomizeBtn,
+  #numTeamsInput {
     min-width: 90px;
   }
 }
