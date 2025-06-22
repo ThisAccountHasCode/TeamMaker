@@ -1,3 +1,7 @@
+// ----------------------------
+// Utility Functions
+// ----------------------------
+
 function randomPastelColor() {
   const r = Math.floor(Math.random() * 127 + 127);
   const g = Math.floor(Math.random() * 127 + 127);
@@ -14,6 +18,14 @@ function getContrastColor(rgb) {
   const yiq = (r * 299 + g * 587 + b * 114) / 1000;
   return yiq >= 128 ? "black" : "white";
 }
+
+function save() {
+  localStorage.setItem("teamBuilderData", JSON.stringify(data));
+}
+
+// ----------------------------
+// Data Initialization
+// ----------------------------
 
 let data = JSON.parse(localStorage.getItem("teamBuilderData")) || {
   players: [],
@@ -36,116 +48,9 @@ if (data.teams.length === 0) {
   save();
 }
 
-function save() {
-  localStorage.setItem("teamBuilderData", JSON.stringify(data));
-}
-
-function render() {
-  const playerList = document.getElementById("playerList");
-  playerList.innerHTML = "";
-
-  // Enable dropping players *back* to available players list (to remove from teams)
-  playerList.ondragover = (e) => e.preventDefault();
-  playerList.ondrop = handleDropOnAvailable;
-
-  // Collect all player IDs currently assigned to teams
-  const playersInTeams = new Set();
-  data.teams.forEach((team) => {
-    team.members.forEach((id) => playersInTeams.add(id));
-  });
-
-  // Render available players (not assigned to any team)
-  data.players.forEach((player) => {
-    if (playersInTeams.has(player.id)) return;
-    const div = createPlayerDiv(player, false);
-    playerList.appendChild(div);
-  });
-
-  const teamsContainer = document.getElementById("teamsContainer");
-  teamsContainer.innerHTML = "";
-
-  data.teams.forEach((team) => {
-    const card = document.createElement("div");
-    card.className = "team";
-    card.dataset.id = team.id;
-
-    // REMOVE draggable from entire team container (NO card.draggable)
-
-    // Team header with name and drag handle
-    const header = document.createElement("strong");
-    header.textContent = team.name;
-    header.style.display = "flex";
-    header.style.justifyContent = "space-between";
-    header.style.alignItems = "center";
-
-    // Create drag handle element
-    const dragHandle = document.createElement("span");
-    dragHandle.textContent = "≡"; // Unicode triple bar as handle icon
-    dragHandle.title = "Drag to move team";
-    dragHandle.style.cursor = "grab";
-    dragHandle.style.userSelect = "none";
-    dragHandle.style.marginLeft = "8px";
-    dragHandle.style.fontWeight = "bold";
-
-    // Make drag handle draggable
-    dragHandle.draggable = true;
-    dragHandle.ondragstart = (e) => {
-      e.dataTransfer.setData("type", "team");
-      e.dataTransfer.setData("id", team.id);
-      if (e.dataTransfer.setDragImage) {
-        e.dataTransfer.setDragImage(card, 10, 10);
-      }
-      // Optional: add dragging class to team card for styling
-      card.classList.add("dragging");
-    };
-    dragHandle.ondragend = () => {
-      card.classList.remove("dragging");
-    };
-
-    header.appendChild(dragHandle);
-    card.appendChild(header);
-
-    // Container for players in this team
-    const playersContainer = document.createElement("div");
-    playersContainer.className = "team-players";
-
-    // Allow dragging players into this team
-    playersContainer.ondragover = (e) => e.preventDefault();
-
-    playersContainer.ondrop = (e) => {
-      e.preventDefault();
-      const type = e.dataTransfer.getData("type");
-      const id = e.dataTransfer.getData("id");
-      if (type === "player" && id) {
-        // Remove player from all teams first
-        data.teams.forEach((t) => {
-          const idx = t.members.indexOf(id);
-          if (idx !== -1) {
-            t.members.splice(idx, 1);
-          }
-        });
-        // Add to this team if not already in
-        if (!team.members.includes(id)) {
-          team.members.push(id);
-          save();
-          render();
-        }
-      }
-    };
-
-    // Render each player in this team
-    team.members.forEach((id) => {
-      const player = data.players.find((p) => p.id === id);
-      if (player) {
-        const div = createPlayerDiv(player, true, team.color);
-        playersContainer.appendChild(div);
-      }
-    });
-
-    card.appendChild(playersContainer);
-    teamsContainer.appendChild(card);
-  });
-}
+// ----------------------------
+// Rendering Functions
+// ----------------------------
 
 function createPlayerDiv(player, inTeam = false, teamColor = "") {
   const div = document.createElement("div");
@@ -204,6 +109,114 @@ function handleDropOnAvailable(e) {
   }
 }
 
+function render() {
+  const playerList = document.getElementById("playerList");
+  playerList.innerHTML = "";
+
+  // Enable dropping players back to available players list (to remove from teams)
+  playerList.ondragover = (e) => e.preventDefault();
+  playerList.ondrop = handleDropOnAvailable;
+
+  // Collect all player IDs currently assigned to teams
+  const playersInTeams = new Set();
+  data.teams.forEach((team) => {
+    team.members.forEach((id) => playersInTeams.add(id));
+  });
+
+  // Render available players (not assigned to any team)
+  data.players.forEach((player) => {
+    if (playersInTeams.has(player.id)) return;
+    const div = createPlayerDiv(player, false);
+    playerList.appendChild(div);
+  });
+
+  const teamsContainer = document.getElementById("teamsContainer");
+  teamsContainer.innerHTML = "";
+
+  data.teams.forEach((team) => {
+    const card = document.createElement("div");
+    card.className = "team";
+    card.dataset.id = team.id;
+
+    // Team header with name and drag handle
+    const header = document.createElement("strong");
+    header.textContent = team.name;
+    header.style.display = "flex";
+    header.style.justifyContent = "space-between";
+    header.style.alignItems = "center";
+
+    // Create drag handle element
+    const dragHandle = document.createElement("span");
+    dragHandle.textContent = "≡"; // Unicode triple bar as handle icon
+    dragHandle.title = "Drag to move team";
+    dragHandle.style.cursor = "grab";
+    dragHandle.style.userSelect = "none";
+    dragHandle.style.marginLeft = "8px";
+    dragHandle.style.fontWeight = "bold";
+
+    // Make drag handle draggable
+    dragHandle.draggable = true;
+    dragHandle.ondragstart = (e) => {
+      e.dataTransfer.setData("type", "team");
+      e.dataTransfer.setData("id", team.id);
+      if (e.dataTransfer.setDragImage) {
+        e.dataTransfer.setDragImage(card, 10, 10);
+      }
+      card.classList.add("dragging");
+    };
+    dragHandle.ondragend = () => {
+      card.classList.remove("dragging");
+    };
+
+    header.appendChild(dragHandle);
+    card.appendChild(header);
+
+    // Container for players in this team
+    const playersContainer = document.createElement("div");
+    playersContainer.className = "team-players";
+
+    // Allow dragging players into this team
+    playersContainer.ondragover = (e) => e.preventDefault();
+
+    playersContainer.ondrop = (e) => {
+      e.preventDefault();
+      const type = e.dataTransfer.getData("type");
+      const id = e.dataTransfer.getData("id");
+      if (type === "player" && id) {
+        // Remove player from all teams first
+        data.teams.forEach((t) => {
+          const idx = t.members.indexOf(id);
+          if (idx !== -1) {
+            t.members.splice(idx, 1);
+          }
+        });
+        // Add to this team if not already in
+        if (!team.members.includes(id)) {
+          team.members.push(id);
+          save();
+          render();
+        }
+      }
+    };
+
+    // Render each player in this team
+    team.members.forEach((id) => {
+      const player = data.players.find((p) => p.id === id);
+      if (player) {
+        const div = createPlayerDiv(player, true, team.color);
+        playersContainer.appendChild(div);
+      }
+    });
+
+    card.appendChild(playersContainer);
+    teamsContainer.appendChild(card);
+  });
+}
+
+// ----------------------------
+// Event Handlers for Adding / Clearing
+// ----------------------------
+
 function addTeam() {
   const input = document.getElementById("teamName");
   const name = input.value.trim();
@@ -256,6 +269,10 @@ function clearBoard() {
   }
 }
 
+// ----------------------------
+// Trash Can Drag & Drop Handlers
+// ----------------------------
+
 const trashCan = document.getElementById("trashCan");
 
 trashCan.ondragover = (e) => {
@@ -288,6 +305,10 @@ trashCan.ondrop = (e) => {
   trashCan.classList.remove("over");
 };
 
+// ----------------------------
+// Event Listeners for Inputs & Buttons
+// ----------------------------
+
 document.getElementById("teamName").addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     addTeam();
@@ -303,6 +324,10 @@ document.getElementById("playerName").addEventListener("keydown", (e) => {
 document.getElementById("addTeamBtn").addEventListener("click", addTeam);
 document.getElementById("addPlayerBtn").addEventListener("click", addPlayer);
 document.getElementById("clearBtn").addEventListener("click", clearBoard);
+
+// ----------------------------
+// Footer: Fetch last edited commit info from GitHub
+// ----------------------------
 
 function addLastEditedFooter() {
   const footer = document.querySelector(".footer");
@@ -342,6 +367,20 @@ function addLastEditedFooter() {
     });
 }
 
+// Toggle sticky class on info box on icon click
+const infoBox = document.querySelector(".info-box");
+const infoIcon = infoBox?.querySelector(".info-icon");
+
+if (infoIcon) {
+  infoIcon.addEventListener("click", () => {
+    infoBox.classList.toggle("sticky");
+  });
+}
+
 addLastEditedFooter();
+
+// ----------------------------
+// Initial Render
+// ----------------------------
 
 render();
