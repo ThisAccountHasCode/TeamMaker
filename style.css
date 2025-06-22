@@ -225,3 +225,26 @@ button:hover {
   background-color: rgba(41, 121, 255, 0.1);
 }
 
+.footer {
+  position: fixed;  /* change from absolute to fixed */
+  bottom: 0.5rem;
+  left: 1rem;
+  font-size: 0.75rem;
+  color: #888;
+  font-family: sans-serif;
+  opacity: 0.6;
+  z-index: 1000;
+  pointer-events: none;
+  max-width: 95vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.footer a {
+  color: #5393ff;
+  text-decoration: none;
+}
+.footer a:hover {
+  text-decoration: underline;
+}
