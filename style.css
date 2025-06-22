@@ -339,3 +339,73 @@ h1 {
   display: block;
   opacity: 1;
 }
+
+#randomizeControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px auto;
+  max-width: 320px;
+  background-color: #1e1e1e;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  border: 1px solid #444;
+  /* Add this so it shrinks properly on smaller widths */
+  flex-wrap: wrap;
+}
+
+#randomizeControls label {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+#numTeamsInput {
+  padding: 8px 12px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #121212;
+  color: #e0e0e0;
+  width: 60px;
+  text-align: center;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  flex-shrink: 0;
+}
+
+#numTeamsInput:focus {
+  outline: none;
+  border-color: #4dabf7;
+  background-color: #222;
+}
+
+#randomizeBtn {
+  padding: 8px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 6px;
+  border: none;
+  background-color: #4dabf7;
+  color: white;
+  transition: background-color 0.3s ease;
+  min-width: 110px;
+  flex-shrink: 0;
+}
+
+#randomizeBtn:hover {
+  background-color: #1e88e5;
+}
+
+/* Responsive adjustment */
+@media (max-width: 400px) {
+  #randomizeControls {
+    max-width: 100%;
+    justify-content: space-around;
+  }
+
+  #randomizeBtn, #numTeamsInput {
+    min-width: 90px;
+  }
+}
