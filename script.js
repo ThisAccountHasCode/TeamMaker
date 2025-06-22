@@ -304,4 +304,44 @@ document.getElementById("addTeamBtn").addEventListener("click", addTeam);
 document.getElementById("addPlayerBtn").addEventListener("click", addPlayer);
 document.getElementById("clearBtn").addEventListener("click", clearBoard);
 
+function addLastEditedFooter() {
+  const footer = document.querySelector(".footer");
+  if (!footer) {
+    console.error("Footer div not found!");
+    return;
+  }
+  footer.textContent = "Fetching last edited info...";
+
+  fetch(
+    "https://api.github.com/repos/ThisAccountHasCode/TeamMaker/commits?per_page=1"
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      if (!data || !data[0]) {
+        footer.textContent = "No commit data found";
+        return;
+      }
+      const commit = data[0];
+      const date = new Date(commit.commit.committer.date);
+      const formattedDate = date.toLocaleString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+
+      const message = commit.commit.message;
+      footer.textContent = `Last edited: ${formattedDate} · ${message}`;
+    })
+    .catch((err) => {
+      console.error("Failed to fetch last commit info", err);
+      footer.textContent = "Last edited: unknown";
+    });
+}
+
+addLastEditedFooter();
+
 render();
