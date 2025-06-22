@@ -271,6 +271,71 @@ h1 {
   color: #5393ff;
   text-decoration: none;
 }
+
 .footer a:hover {
   text-decoration: underline;
+}
+
+.info-box {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  font-family: sans-serif;
+  z-index: 1100;
+  user-select: none;
+  cursor: default;
+}
+
+.info-icon {
+  background-color: #555555;
+  color: #bbbbbb;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 24px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer; /* clickable */
+  box-shadow: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.info-icon:hover {
+  background-color: #777777;
+  color: #eeeeee;
+}
+
+/* Tooltip default hidden */
+.info-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 130%;
+  right: 0;
+  width: 320px;
+  padding: 16px 20px;
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  white-space: normal;
+  pointer-events: auto;
+  user-select: text;
+  z-index: 1200;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Show on hover only if NOT sticky */
+.info-box:not(.sticky):hover .info-tooltip {
+  display: block;
+  opacity: 1;
+}
+
+/* Show if sticky (clicked) */
+.info-box.sticky .info-tooltip {
+  display: block;
+  opacity: 1;
 }
