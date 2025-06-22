@@ -23,6 +23,13 @@ function save() {
   localStorage.setItem("teamBuilderData", JSON.stringify(data));
 }
 
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
 // ----------------------------
 // Data Initialization
 // ----------------------------
@@ -93,6 +100,7 @@ function handleDropOnAvailable(e) {
   const type = e.dataTransfer.getData("type");
   const id = e.dataTransfer.getData("id");
   if (!id) return;
+
   if (type === "player") {
     let changed = false;
     data.teams.forEach((team) => {
@@ -110,26 +118,27 @@ function handleDropOnAvailable(e) {
 }
 
 function render() {
+  // Render Available Players List
   const playerList = document.getElementById("playerList");
   playerList.innerHTML = "";
-
-  // Enable dropping players back to available players list (to remove from teams)
   playerList.ondragover = (e) => e.preventDefault();
   playerList.ondrop = handleDropOnAvailable;
 
-  // Collect all player IDs currently assigned to teams
+  // Collect player IDs currently assigned to teams
   const playersInTeams = new Set();
   data.teams.forEach((team) => {
     team.members.forEach((id) => playersInTeams.add(id));
   });
 
-  // Render available players (not assigned to any team)
+  // Render unassigned players
   data.players.forEach((player) => {
-    if (playersInTeams.has(player.id)) return;
-    const div = createPlayerDiv(player, false);
-    playerList.appendChild(div);
+    if (!playersInTeams.has(player.id)) {
+      const div = createPlayerDiv(player, false);
+      playerList.appendChild(div);
+    }
   });
 
+  // Render Teams and their Players
   const teamsContainer = document.getElementById("teamsContainer");
   teamsContainer.innerHTML = "";
 
@@ -145,16 +154,15 @@ function render() {
     header.style.justifyContent = "space-between";
     header.style.alignItems = "center";
 
-    // Create drag handle element
+    // Drag handle
     const dragHandle = document.createElement("span");
-    dragHandle.textContent = "≡"; // Unicode triple bar as handle icon
+    dragHandle.textContent = "≡"; // triple bar as handle icon
     dragHandle.title = "Drag to move team";
     dragHandle.style.cursor = "grab";
     dragHandle.style.userSelect = "none";
     dragHandle.style.marginLeft = "8px";
     dragHandle.style.fontWeight = "bold";
 
-    // Make drag handle draggable
     dragHandle.draggable = true;
     dragHandle.ondragstart = (e) => {
       e.dataTransfer.setData("type", "team");
@@ -171,26 +179,22 @@ function render() {
     header.appendChild(dragHandle);
     card.appendChild(header);
 
-    // Container for players in this team
+    // Players container within team
     const playersContainer = document.createElement("div");
     playersContainer.className = "team-players";
 
-    // Allow dragging players into this team
     playersContainer.ondragover = (e) => e.preventDefault();
-
     playersContainer.ondrop = (e) => {
       e.preventDefault();
       const type = e.dataTransfer.getData("type");
       const id = e.dataTransfer.getData("id");
       if (type === "player" && id) {
-        // Remove player from all teams first
+        // Remove player from any team
         data.teams.forEach((t) => {
           const idx = t.members.indexOf(id);
-          if (idx !== -1) {
-            t.members.splice(idx, 1);
-          }
+          if (idx !== -1) t.members.splice(idx, 1);
         });
-        // Add to this team if not already in
+        // Add player to this team if not already present
         if (!team.members.includes(id)) {
           team.members.push(id);
           save();
@@ -199,7 +203,7 @@ function render() {
       }
     };
 
-    // Render each player in this team
+    // Render players inside team
     team.members.forEach((id) => {
       const player = data.players.find((p) => p.id === id);
       if (player) {
@@ -236,22 +240,18 @@ function addTeam() {
 function addPlayer() {
   const input = document.getElementById("playerName");
   const name = input.value.trim();
-  if (!name) return; // Ignore empty
+  if (!name) return;
 
-  // Normalize for comparison (lowercase)
   const normalizedNewName = name.toLowerCase();
-
-  // Check for duplicates
   const duplicate = data.players.some(
     (p) => p.name.toLowerCase() === normalizedNewName
   );
 
   if (duplicate) {
     alert(`Player "${name}" already exists! Please enter a unique name.`);
-    return; // Do not add duplicate
+    return;
   }
 
-  // Add player if unique
   data.players.push({ id: Date.now().toString(), name, leader: false });
   input.value = "";
   save();
@@ -320,27 +320,39 @@ trashCan.ondrop = (e) => {
 };
 
 // ----------------------------
-// Event Listeners for Inputs & Buttons
+// Team Randomization
 // ----------------------------
 
-document.getElementById("teamName").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    addTeam();
-  }
-});
+function randomizeTeams(numTeams) {
+  if (numTeams < 1) return;
 
-document.getElementById("playerName").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    addPlayer();
+  // Create new teams
+  data.teams = [];
+  for (let i = 1; i <= numTeams; i++) {
+    data.teams.push({
+      id: Date.now().toString() + "-" + i,
+      name: `Team ${i}`,
+      members: [],
+      color: randomPastelColor(),
+    });
   }
-});
 
-document.getElementById("addTeamBtn").addEventListener("click", addTeam);
-document.getElementById("addPlayerBtn").addEventListener("click", addPlayer);
-document.getElementById("clearBtn").addEventListener("click", clearBoard);
+  // Shuffle players copy
+  const playersCopy = [...data.players];
+  shuffleArray(playersCopy);
+
+  // Distribute players evenly
+  playersCopy.forEach((player, index) => {
+    const teamIndex = index % numTeams;
+    data.teams[teamIndex].members.push(player.id);
+  });
+
+  save();
+  render();
+}
 
 // ----------------------------
-// Footer: Fetch last edited commit info from GitHub
+// Footer: Fetch Last Edited Commit Info from GitHub
 // ----------------------------
 
 function addLastEditedFooter() {
@@ -381,7 +393,10 @@ function addLastEditedFooter() {
     });
 }
 
-// Toggle sticky class on info box on icon click
+// ----------------------------
+// Info Box Toggle
+// ----------------------------
+
 const infoBox = document.querySelector(".info-box");
 const infoIcon = infoBox?.querySelector(".info-icon");
 
@@ -390,57 +405,36 @@ if (infoIcon) {
     infoBox.classList.toggle("sticky");
   });
 }
-function shuffleArray(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-}
 
-function randomizeTeams(numTeams) {
-  if (numTeams < 1) return;
+// ----------------------------
+// Event Listeners for Inputs & Buttons
+// ----------------------------
 
-  // Create new teams
-  data.teams = [];
-  for (let i = 1; i <= numTeams; i++) {
-    data.teams.push({
-      id: Date.now().toString() + "-" + i,
-      name: `Team ${i}`,
-      members: [],
-      color: randomPastelColor(),
-    });
-  }
+document.getElementById("teamName").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") addTeam();
+});
 
-  // Shuffle players copy
-  const playersCopy = [...data.players];
-  shuffleArray(playersCopy);
+document.getElementById("playerName").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") addPlayer();
+});
 
-  // Distribute players evenly
-  playersCopy.forEach((player, index) => {
-    const teamIndex = index % numTeams;
-    data.teams[teamIndex].members.push(player.id);
-  });
+document.getElementById("addTeamBtn").addEventListener("click", addTeam);
+document.getElementById("addPlayerBtn").addEventListener("click", addPlayer);
+document.getElementById("clearBtn").addEventListener("click", clearBoard);
 
-  save();
-  render();
-}
-
-// Hook up button
 document.getElementById("randomizeBtn").addEventListener("click", () => {
   const numTeamsInput = document.getElementById("numTeamsInput");
   let numTeams = parseInt(numTeamsInput.value, 10);
 
-  // Clamp to minimum 1, max 10 (or whatever limit you want)
   if (isNaN(numTeams) || numTeams < 1) numTeams = 1;
   if (numTeams > 10) numTeams = 10;
 
   randomizeTeams(numTeams);
 });
 
+// ----------------------------
+// Initial Setup
+// ----------------------------
+
 addLastEditedFooter();
-
-// ----------------------------
-// Initial Render
-// ----------------------------
-
 render();
