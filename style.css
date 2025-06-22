@@ -82,36 +82,48 @@ h1 {
   color: #ffffff;
 }
 
-input, button {
-  padding: 10px 14px;
-  font-size: 16px;
-  border: none;
-  border-radius: 6px;
-}
-
-input {
-  background-color: #1e1e1e;
-  color: #fff;
-  border: 1px solid #444;
-}
-
-button {
-  background-color: #2979ff;
-  color: white;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-button:hover {
-  background-color: #5393ff;
-}
-
+/* Updated input and button styling for matching widths */
 .input-section {
   margin-bottom: 12px;
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* no wrapping */
   gap: 10px;
+  max-width: 420px;  /* optional to constrain width */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.input-section input {
+  flex: 1;             /* fill available space */
+  min-width: 0;        /* prevent overflow */
+  max-width: 300px;    /* optional max width */
+  background-color: #1e1e1e;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 10px 14px;
+  font-size: 16px;
+  border-radius: 6px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #444;
+}
+
+.input-section button {
+  width: 100px;        /* fixed button width */
+  flex-shrink: 0;      /* no shrinking */
+  background-color: #2979ff;
+  color: white;
+  cursor: pointer;
+  padding: 10px 14px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+  transition: background 0.3s ease;
+}
+
+.input-section button:hover {
+  background-color: #5393ff;
 }
 
 .grid {
@@ -192,6 +204,20 @@ button:hover {
 
   .container {
     padding: 20px 10px;
+  }
+
+  /* Adjust input-section for smaller screens */
+  .input-section {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+
+  .input-section button {
+    width: 100%;
+  }
+
+  .input-section input {
+    max-width: 100%;
   }
 }
 
