@@ -33,14 +33,30 @@
 
     <div class="section-title">Teams</div>
     <div class="teams grid" id="teamsContainer"></div>
+
   </div>
 
-<div class="footer"></div>
-<div class="info-box">
-  <div class="info-icon">i</div>
-  <div class="info-tooltip">
-    Working on randomize team functionality as well as randomize into X amount of teams<br>Made by: Mew
+  <div id="randomizeControls" style="margin-bottom: 1rem;">
+    <label for="numTeamsInput">Number of Teams:</label>
+    <input
+      type="number"
+      id="numTeamsInput"
+      min="1"
+      max="10"
+      value="2"
+      style="width: 50px; margin-left: 0.5rem;"
+    />
+    <button id="randomizeBtn" style="margin-left: 1rem;">Randomize Teams</button>
   </div>
-</div>
+
+  <div class="footer"></div>
+
+  <div class="info-box">
+    <div class="info-icon">i</div>
+    <div class="info-tooltip">
+      Working on randomize team functionality as well as randomize into X amount of teams<br />
+      Made by: Mew
+    </div>
+  </div>
 </body>
 </html>
